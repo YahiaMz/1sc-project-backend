@@ -18,6 +18,12 @@ export class LevelController {
     return  My_Helper.SUCCESS_RESPONSE(await this.levelService.findAll());
   }
 
+  
+  @Get('/:id')
+  async findLevelAndItCurrentBatch(@Param('id') level_Id ) {
+    return  My_Helper.SUCCESS_RESPONSE(await this.levelService.findOne(+level_Id));
+  }
+
 
   @Patch('/update/:id')
   async update(@Param('id') id: string, @Body() updateLevelDto: UpdateLevelDto) {

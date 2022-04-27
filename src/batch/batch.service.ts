@@ -5,6 +5,7 @@ import { My_Helper } from 'src/MY-HELPER-CLASS';
 import { Speciality } from 'src/speciality/entities/speciality.entity';
 import { In, Repository } from 'typeorm';
 import { CreateBatchDto } from './dto/create-batch.dto';
+import { UpdateBatchDto } from './dto/update-batch.dto';
 import { Batch } from './entities/batch.entity';
 
 @Injectable()
@@ -39,9 +40,8 @@ export class BatchService {
 
  async findAll( ){
 try { 
-   let batches =  await this.batchRepo.find({ relations : ['level'
-  , 'specialities']});
-  
+   let batches =  await this.batchRepo.find({ relations : ['level' ,'specialities' ]});
+
     return batches;
 
 }catch( e ){
@@ -75,10 +75,11 @@ try {
   }
 
 
-private async findOneForUpdateAndRemove ( id : number) {
+  // you're using this function in chapter , with the help of dependency injection dp
+public async findBatchByIdOrThrow_Exp( id : number) {
   let batch; 
     try {
-        batch = await this.batchRepo.findOne({id : id} , {loadEagerRelations:true , loadRelationIds:true});
+        batch = await this.batchRepo.findOne({id : id} , {loadRelationIds:true  });
      } catch (error) {
        throw (new HttpException(My_Helper.FAILED_RESPONSE('something wrong !') , 201))
      }
@@ -91,10 +92,19 @@ private async findOneForUpdateAndRemove ( id : number) {
 }
 
 
-  async update(id: number, attrs : Partial<Batch>) {
-   let batchForUpdate = await this.findOneForUpdateAndRemove(id);
+  async update(id: number, attrs : UpdateBatchDto) {
+        console.log(attrs);
+
+   
+     
+    let batchForUpdate = await this.findBatchByIdOrThrow_Exp(id);
+     if(attrs.level_id) {
+    let newLevel = await this.levelService.findOneForUpdate(attrs.level_id);
+    batchForUpdate.level = newLevel;
+     
+  }
+
    Object.assign(batchForUpdate , attrs);
-  
    try {
     batchForUpdate = await this.batchRepo.save(batchForUpdate);
    } catch (error) {
@@ -106,7 +116,7 @@ private async findOneForUpdateAndRemove ( id : number) {
   }
 
   async remove(id: number) {
-      let batch = await this.findOneForUpdateAndRemove(id);
+      let batch = await this.findBatchByIdOrThrow_Exp(id);
       try {
         await this.batchRepo.remove(batch);
       } catch (e) {
@@ -128,12 +138,12 @@ private async findOneForUpdateAndRemove ( id : number) {
           )
         }
 
+        
         if ( !spec ) throw new HttpException( 
-           My_Helper.FAILED_RESPONSE('speciality not found , so you cant add this speciality to this batch')
+          My_Helper.FAILED_RESPONSE('speciality not found , so you cant add this speciality to this batch')
            ,  
           201
         );
-
 
         return spec;
     }
@@ -142,22 +152,17 @@ private async findOneForUpdateAndRemove ( id : number) {
   async addSepciality ( batch_Id : number , speciality_Id : number ) { 
     
     // validating the existing of batch and speciality 
-    let newSpec = await this.findSpecialityByIdOrThrowExp(speciality_Id);
-    let batch = await this.findOneForUpdateAndRemove(batch_Id);
     
+    let newSpec = await this.findSpecialityByIdOrThrowExp(speciality_Id);
+    let batch = await this.findBatchByIdOrThrow_Exp(batch_Id);
 
-
-    /* 
-     
-     the problem here is when you need to add speciality to batch you have 
-     to fetch all the old data and push the new speciality to array 
-     then you save it 
-
-    */ 
-
+    console.log(batch);
+    
+    
     
     let specialities = [];
-    specialities = await this.specRepo.find({where : { 
+    specialities = await this.specRepo.find({ 
+      where : { 
       id : In(batch.specialities)
     }}) ;
     

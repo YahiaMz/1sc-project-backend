@@ -1,5 +1,5 @@
 import { Speciality } from "src/speciality/entities/speciality.entity";
-import { CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Section { 
@@ -7,7 +7,7 @@ export class Section {
     @PrimaryGeneratedColumn()
     id : number;
 
-    @PrimaryColumn()
+    @Column({type : 'varchar' } )
     name : string;
 
     @CreateDateColumn()
@@ -16,8 +16,8 @@ export class Section {
     @UpdateDateColumn()
     updated_at: string;
 
-    @ManyToOne(type => Speciality , {onDelete : 'RESTRICT' , onUpdate : 'RESTRICT'})
-    @JoinColumn({name : 'speciality_Id'})
+    @ManyToOne(type => Speciality ,  { onDelete : 'CASCADE' , onUpdate : 'CASCADE' } )
+    @JoinColumn({name : 'speciality_Id' })
     speciality : Speciality;
     
 }

@@ -10,7 +10,8 @@ import { Level } from './entities/level.entity';
 export class LevelService {
 
 
-  constructor(@InjectRepository(Level) private levelRepo : Repository<Level>) { }
+  constructor(@InjectRepository(Level) private levelRepo : Repository<Level> , 
+  ) { }
 
  async create(createLevelDto: CreateLevelDto) {
     let level;
@@ -24,8 +25,19 @@ export class LevelService {
   }
 
  async findAll() { 
-    return await this.levelRepo.find({loadEagerRelations : true , loadRelationIds : true});
-  }
+   try {
+    let levels =  await this.levelRepo.find();
+ 
+    for (let x : number = 0 ; x <levels.length ; x ++ ){
+       let currentBatch = await this.levelRepo.query(`select * from batch where batch.level_Id = ${levels[x].id}`);
+       levels[x]['currentBatch'] = currentBatch[0];
+    }
+
+    return levels;  
+   } catch (error) {
+     
+   }
+    }
 
  async findOne ( id : number ){ 
   let level;
@@ -36,7 +48,11 @@ export class LevelService {
    } 
 
    if(!level) throw (new HttpException(My_Helper.FAILED_RESPONSE('level not Exist !') , 201))
-    return level;
+   
+   let currentBatch = await this.levelRepo.query(`select * from batch where batch.level_Id = ${level.id}`);
+   level['currentBatch'] = currentBatch[0];
+   return level;
+
 
  }
 
@@ -79,7 +95,7 @@ export class LevelService {
 
 
   public async levelExist( id ) : Promise<boolean> { 
-    console.log(' Excuting ...');
+    console.log(' Executing ...');
     
    let level;
     try {

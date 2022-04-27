@@ -29,6 +29,7 @@ export class StudentService {
       
         await this.studentRep.save(student);
         
+        delete student.password;
         return student;
 
      } catch (error) {
@@ -91,7 +92,7 @@ async studentLogin( loginStudentDto : LoginStudentDto ) {
       message : 'Wrong email or password'
   } , 201)));
     
-
+  delete student.password;
   return student;
 }
 
@@ -112,6 +113,7 @@ async updateStudent( id : number, updateStudent : Partial<Student> ) {
 
          try { 
             savedStudent = await this.studentRep.save(student);
+            delete savedStudent.password;
             return savedStudent;
          }catch ( e ) { 
             throw (new HttpException({ success:false , 
@@ -147,7 +149,7 @@ async deleteStudent(id : number) {
  
   if (student.profileImage) { 
   
-  const path =My_Helper.getUploadPath(UsersEnum.Student)+'/'+student.profileImage ;
+  const path =My_Helper.studentImagesPath+student.profileImage ;
 
   try {
 
@@ -167,12 +169,10 @@ async deleteStudent(id : number) {
 async getProfileImage( @Res()  res , profileImage : string){
  
    try {
-      let file = await res.sendFile(join(process.cwd() , My_Helper.getUploadPath(UsersEnum.Student)+'/'+profileImage));         
+      let file = await res.sendFile(join(process.cwd() , My_Helper.getProfileImageUploadPath(UsersEnum.Student)+'/'+profileImage));         
       return file;
    } catch (error) {
-       
-      throw new HttpException(My_Helper.FAILED_RESPONSE('image not found') , 201);
-       
+      throw new HttpException(My_Helper.FAILED_RESPONSE('image not found') , 201);   
    }
    
 }

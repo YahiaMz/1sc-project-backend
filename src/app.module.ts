@@ -16,7 +16,17 @@ import { LevelModule } from './level/level.module';
 import { Level } from './level/entities/level.entity';
 import { SpecialityModule } from './speciality/speciality.module';
 import { Speciality } from './speciality/entities/speciality.entity';
-import { Section } from './section/entities/section.entity';
+import { GroupModule } from './group/group.module';
+import { SectionModule } from './section/section.module';
+import { Group } from './group/entities/group.entity';
+import { SpecialityHasManyMoudules } from './speciality/entities/specialityHasManyModule.entity';
+import { NewModule } from './new/new.module';
+import { New } from './new/entities/new.entity';
+import { ChapterModule } from './chapter/chapter.module';
+import { Chapter } from './chapter/entities/chapter.entity';
+import { TimetableModule } from './timetable/timetable.module';
+import { LessonModule } from './lesson/lesson.module';
+import { SaleModule } from './sale/sale.module';
 
 
 
@@ -29,16 +39,25 @@ import { Section } from './section/entities/section.entity';
       port: 3306,
       database:'test',
       autoLoadEntities: true,
-      entities: [Teacher , Admin , ModuleEntity , Student  , Batch , Level , Speciality , Section],
+      entities: [
+        Teacher , Admin , ModuleEntity , 
+        Student  , Batch , Level , Speciality , 
+        Group , SpecialityHasManyMoudules ,
+        New , Chapter
+      ],
       synchronize: true,
     }),
     
     BatchModule,
-    
     LevelModule,
-    
-    SpecialityModule,  
-   
+    SpecialityModule,
+    GroupModule,
+    SectionModule,
+    NewModule,
+    ChapterModule,
+    TimetableModule,
+    LessonModule,
+    SaleModule,  
   ], 
   controllers: [AppController ],
   providers: [AppService],

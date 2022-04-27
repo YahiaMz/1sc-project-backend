@@ -1,6 +1,6 @@
 import { Level } from "src/level/entities/level.entity";
 import { Speciality } from "src/speciality/entities/speciality.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, TableForeignKey, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn, TableForeignKey, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Batch {
@@ -21,13 +21,12 @@ export class Batch {
     @UpdateDateColumn()
     updated_at: string;
 
-    @ManyToOne(type => Level  , level => level.batches, {  nullable : false , onUpdate : 'RESTRICT' , onDelete : 'RESTRICT' })
-    @JoinColumn({ name: "level_Id" } )
-    public level : Level;
 
+    @OneToOne(type => Level , {nullable : true , onDelete : 'CASCADE' , onUpdate : 'CASCADE'})
+    @JoinColumn({name : 'level_Id' } )
+    level : Level;
 
-
-    @ManyToMany(type => Speciality , {cascade:true , onDelete : 'RESTRICT' , onUpdate : 'RESTRICT'})
+    @ManyToMany(type => Speciality , {cascade:true , onDelete : 'CASCADE' , onUpdate : 'CASCADE'})
     @JoinTable({ 
         name : 'batch_has_speciality' , 
         joinColumn: { name: 'batch_Id', referencedColumnName: 'id'},

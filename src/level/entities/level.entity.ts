@@ -1,5 +1,5 @@
 import { Batch } from "src/batch/entities/batch.entity";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Level {
@@ -10,9 +10,8 @@ export class Level {
     @Column({type : 'integer' , unsigned : true , unique : true})
     level : number;
 
-    @Column({type:'varchar', nullable : true})
+    @Column({type:'varchar', nullable : true , unique : true})
     name :string;
-
 
     @CreateDateColumn()
     created_at: string;
@@ -20,9 +19,6 @@ export class Level {
     @UpdateDateColumn()
     updated_at: string;
 
-
-    @OneToMany(type => Batch , batch => batch.level )
-    batches : Batch[];
     
 
 }

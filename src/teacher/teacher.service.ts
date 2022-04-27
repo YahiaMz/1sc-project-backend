@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable, NotFoundException,  } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, NotFoundException, Res,  } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTeacherDto } from './dtos/create-teacher-dto';
@@ -6,14 +6,38 @@ import { Teacher } from './teacher.entity';
 import * as bcrypt from 'bcrypt'
 import { LoginTeacherDto } from './dtos/teacher-login.dto';
 import { My_Helper } from 'src/MY-HELPER-CLASS';
-
+import {v4 as uuidv4} from 'uuid';
+import { createWriteStream } from 'fs';
+import { join } from 'path';
+const fs = require('fs')
 
 
 @Injectable()
 export class TeacherService {
 
     constructor (@InjectRepository(Teacher) private teacherRepository : Repository<Teacher>){ }
-   private salt : number = 9;
+    private salt : number = 9;
+  
+
+    // for other services like lesson , news ...
+    public async findTeacherByIdOrThrowExp ( teacher_Id : number) {
+        try {
+          let teacher = await this.teacherRepository.findOne({
+            select : ['id' , 'name' , 'lastName' ,'email', 'profileImage' , 'dateOfBirth'] ,
+            where : {
+              id : teacher_Id
+            }
+            });
+          if(teacher) return teacher;
+        } catch (error) {
+          throw new HttpException(My_Helper.FAILED_RESPONSE('something wrong !') , 201);
+        }
+        throw new HttpException(My_Helper.FAILED_RESPONSE(`teacher not found`) , 201);
+      
+      
+      }
+
+
     async createTeacher ( teacherData : CreateTeacherDto) {
         let teacher;
     try {    
@@ -51,8 +75,6 @@ export class TeacherService {
             } , 201))
          }
     }
-
-
 
 
     async TeacherLogin (  param : LoginTeacherDto ) { 
@@ -152,9 +174,57 @@ export class TeacherService {
 
     async removeTeacher( id : number) {
           let teacher = await this.findTeacherById(id);  
-           await this.teacherRepository.remove(teacher);
+          
+          try {
+                
+             let profilePath = My_Helper.teacherImagesPath + teacher.profileImage;
+             fs.unlinkSync(profilePath);
+             await this.teacherRepository.remove(teacher);
+           
+          } catch ( e) {
+            throw new HttpException(My_Helper.FAILED_RESPONSE(' something wrong ! , maybe cant remove profile image' ), 201);
+          }
+          
+
+    
+        }
+
+
+    async updateProfilePicture ( teacher_Id : number , file : Express.Multer.File ) { 
+        let teacher = await this.findTeacherByIdOrThrowExp(teacher_Id);
+        if  ( !file || ! My_Helper.is_Image(file.mimetype) ) { 
+           throw new HttpException( My_Helper.FAILED_RESPONSE("image must be a {.png, .jpeg, .jpg } ") , 201)
+        };
+
+        let filePath;
+
+        if ( !teacher.profileImage ) { 
+            let imageName = 'teacher_'+uuidv4() + My_Helper.fileExtinction(file.mimetype);
+             filePath = My_Helper.teacherImagesPath + imageName;
+            teacher.profileImage = imageName;
+        } else { 
+            filePath = My_Helper.teacherImagesPath + teacher.profileImage;
+        }
+
+        let streamWriter = createWriteStream(filePath);
+        streamWriter.write(file.buffer);
+
+        return await this.teacherRepository.save(teacher);
+
     }
 
+
+    async showProfilePicture ( profileImageName : String , @Res() res ){
+        try {
+            let module_Image = await res.sendFile(join(process.cwd() , My_Helper.teacherImagesPath + profileImageName))
+            return module_Image;
+        } catch (error) {
+            throw new HttpException({ 
+                success : false , 
+                message : ' image not found !' , 
+               } , 201)
+        }
+     }
 
 
 }

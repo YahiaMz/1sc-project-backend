@@ -2,24 +2,30 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SectionService } from './section.service';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
+import { My_Helper } from 'src/MY-HELPER-CLASS';
 
 @Controller('section')
 export class SectionController {
   constructor(private readonly sectionService: SectionService) {}
 
-  @Post()
-  create(@Body() createSectionDto: CreateSectionDto) {
-    return this.sectionService.create(createSectionDto);
+  @Post('/create')
+  async create(@Body() createSectionDto: CreateSectionDto) {
+    let section = await this.sectionService.create(createSectionDto);
+    return My_Helper.SUCCESS_RESPONSE(section);
   }
 
-  @Get()
-  findAll() {
-    return this.sectionService.findAll();
+  @Get('/all')
+  async findAll() {
+    let sections = await this.sectionService.findAll();
+   return My_Helper.SUCCESS_RESPONSE(sections);
+  
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sectionService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    let section = await this.sectionService.findOne(+id);
+    return My_Helper.SUCCESS_RESPONSE(section);
+  
   }
 
   @Patch(':id')
@@ -27,8 +33,10 @@ export class SectionController {
     return this.sectionService.update(+id, updateSectionDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.sectionService.remove(+id);
+  @Delete('/delete/:id')
+   async remove(@Param('id') id: string) {
+    await this.sectionService.remove(+id);
+      
+    return My_Helper.SUCCESS_RESPONSE('section removed with success')
   }
 }

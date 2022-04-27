@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Module } from "src/module/module.entity";
+import { Column, CreateDateColumn, Entity,  OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { SpecialityHasManyMoudules } from "./specialityHasManyModule.entity";
 
 @Entity()
 export class Speciality 
@@ -21,7 +23,7 @@ export class Speciality
     @UpdateDateColumn()
     updated_at: string;
 
-
-
+    @OneToMany(type => SpecialityHasManyMoudules , shm => shm.speciality , {onDelete : 'CASCADE' , onUpdate : 'CASCADE'})
+    modules : SpecialityHasManyMoudules[];
 
 }

@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { My_Helper } from 'src/MY-HELPER-CLASS';
 import { CreateTeacherDto } from './dtos/create-teacher-dto';
 import { TeacherService } from './teacher.service';
 import * as bcrypt from 'bcrypt';
 import { LoginTeacherDto } from './dtos/teacher-login.dto';
 import { UpdateTeacherDto } from './dtos/update-teacher.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('teacher')
 export class TeacherController {
@@ -62,6 +63,22 @@ export class TeacherController {
          await this.teacherService.removeTeacher(id);
          return My_Helper.SUCCESS_RESPONSE('teacher has been removed with success !')
      }
+
+
+
+
+     @Post('/updateProfileImage/:id')
+     @UseInterceptors(FileInterceptor('image'))
+     async updateProfilePicture(@Param('id')  teacher_Id , @UploadedFile() file : Express.Multer.File ){ 
+              
+        let uTeacher =  await this.teacherService.updateProfilePicture(+teacher_Id , file);
+     return My_Helper.SUCCESS_RESPONSE(uTeacher);
+    }  
+
+    @Get('/profile-image/:profileImage')
+    async sendProfileImage ( @Param('profileImage') profileImage : string , @Res() res ){ 
+       return await this.teacherService.showProfilePicture(profileImage,  res);
+    }
 
 
 }

@@ -9,7 +9,6 @@ import { StudentService } from './student.service';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { UsersEnum } from 'src/Enums';
-import { join } from 'path';
 
 @Controller('student')
 export class StudentController {
@@ -63,13 +62,12 @@ async getStudentById (@Param('id') studentId ) {
 @Post('/updateProfileImage/:id')
 @UseInterceptors(FileInterceptor('image' , {
 storage : diskStorage({
-     destination : My_Helper.getUploadPath(UsersEnum.Student) , 
+     destination : My_Helper.getProfileImageUploadPath(UsersEnum.Student) , 
      filename : (req ,file , cb )=>{
 
          const fileName : string = path.parse(file.originalname).name.replace(/\s/g ,'') + uuidv4()
          const extinction : string = path.parse(file.originalname).ext;
 
-         
           
           cb(null ,`${fileName}${extinction}`)   
      }

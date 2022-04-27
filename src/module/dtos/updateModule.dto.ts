@@ -5,8 +5,8 @@ export class updateModuleDto {
 
     @IsOptional()    
     @IsNumberString()
-    
-    levelId : number;
+    level_Id : number;
+
     @IsOptional()
     @IsNumberString()
     semester : number;

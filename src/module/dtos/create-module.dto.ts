@@ -3,7 +3,7 @@ import { IsNumberString, IsString } from "class-validator";
 export class CreateModuleDto {
 
     @IsNumberString()
-    levelId : number;
+    level_Id : number;
 
     @IsNumberString()
     semester : number;
@@ -17,7 +17,5 @@ export class CreateModuleDto {
     @IsString()
     description : string;
 
-    @IsString()
-    imageUrl : string;
     
 }

@@ -10,6 +10,7 @@ import { Speciality } from '../speciality/entities/speciality.entity';
   controllers: [BatchController],
   providers: [BatchService ] , 
   imports : [TypeOrmModule.forFeature([Batch , Speciality ]) ,
-   LevelModule]
+  LevelModule] , 
+  exports : [BatchService ]
 })
 export class BatchModule {}
