@@ -16,14 +16,14 @@ const fs = require('fs')
 export class TeacherService {
 
     constructor (@InjectRepository(Teacher) private teacherRepository : Repository<Teacher>){ }
-    private salt : number = 9;
+    private salt : number = 12;
   
 
     // for other services like lesson , news ...
     public async findTeacherByIdOrThrowExp ( teacher_Id : number) {
         try {
           let teacher = await this.teacherRepository.findOne({
-            select : ['id' , 'name' , 'lastName' ,'email', 'profileImage' , 'dateOfBirth'] ,
+            select : ['id' , 'name' , 'lastName' ,'email', 'profileImage' , 'wilaya', 'dateOfBirth'] ,
             where : {
               id : teacher_Id
             }
@@ -64,6 +64,7 @@ export class TeacherService {
              'lastName' , 
              'dateOfBirth' ,
              'email' ,
+             'wilaya',
              'profileImage' ,
              'created_at'  ,
              'updated_at' ]});
@@ -176,11 +177,12 @@ export class TeacherService {
           let teacher = await this.findTeacherById(id);  
           
           try {
-                
+                if (teacher.profileImage) { 
              let profilePath = My_Helper.teacherImagesPath + teacher.profileImage;
-             fs.unlinkSync(profilePath);
-             await this.teacherRepository.remove(teacher);
-           
+             await fs.unlinkSync(profilePath);
+            }
+            await this.teacherRepository.remove(teacher);
+
           } catch ( e) {
             throw new HttpException(My_Helper.FAILED_RESPONSE(' something wrong ! , maybe cant remove profile image' ), 201);
           }
@@ -225,6 +227,18 @@ export class TeacherService {
                } , 201)
         }
      }
+
+
+
+     async modulesOfTeacher(teacher_Id : number) {
+         let teacher = await this.findTeacherByIdOrThrowExp(teacher_Id);
+
+         let modules = this.teacherRepository.query(`SELECT  m.* from teacher t  inner join lesson l on
+          l.teacher_Id = t.id  INNER JOIN module m 
+         on l.module_Id  = m.id where l.teacher_Id = ${teacher_Id} GROUP BY m.id ;`)
+
+            return modules;
+        }
 
 
 }

@@ -12,7 +12,7 @@ constructor ( private moduleService : ModuleService ) {}
 
     @Post('/create')
     @UseInterceptors(FileInterceptor('image'))
-    async create( @Body() moduleData : CreateModuleDto , @UploadedFile() module_image){ 
+    async create( @Body() moduleData : CreateModuleDto , @UploadedFile() module_image){         
        let createdModule = await this.moduleService.createModule(moduleData , module_image);
        return My_Helper.SUCCESS_RESPONSE(createdModule);
     }
@@ -53,6 +53,7 @@ constructor ( private moduleService : ModuleService ) {}
       let moduleWithUpdatedImage = await this.moduleService.updateImage(module_Id , file);
       return My_Helper.SUCCESS_RESPONSE(moduleWithUpdatedImage);
     }
+
     @Get('/images/:module_image')
     async sendModuleImage( @Param('module_image') module_Image , @Res() res ) {
         await this.moduleService.sendModuleImage(module_Image , res );

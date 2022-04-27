@@ -39,7 +39,7 @@ async update(  @Param('studentId') id : number,  @Body() body : UpdateStudentDto
 
 
 
-@Delete('/:id')
+@Delete('/delete/:id')
 async deleteStudent (@Param('id') studentId : number) {
      await this.studentService.deleteStudent(studentId);
      return My_Helper.SUCCESS_RESPONSE('student removed with success ');
@@ -60,21 +60,9 @@ async getStudentById (@Param('id') studentId ) {
 
 
 @Post('/updateProfileImage/:id')
-@UseInterceptors(FileInterceptor('image' , {
-storage : diskStorage({
-     destination : My_Helper.getProfileImageUploadPath(UsersEnum.Student) , 
-     filename : (req ,file , cb )=>{
-
-         const fileName : string = path.parse(file.originalname).name.replace(/\s/g ,'') + uuidv4()
-         const extinction : string = path.parse(file.originalname).ext;
-
-          
-          cb(null ,`${fileName}${extinction}`)   
-     }
-})
-}))
+@UseInterceptors(FileInterceptor('image'))
 async updateProfileImage (@Param('id') studentId : number,  @UploadedFile() file : Express.Multer.File) { 
-    return await this.studentService.updateStudent(studentId ,{profileImage : file.filename })
+    return await this.studentService.updateProfileImage(studentId , file)
 }
 
 

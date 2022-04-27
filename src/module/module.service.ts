@@ -8,6 +8,7 @@ import { CreateModuleDto } from './dtos/create-module.dto';
 import { Module } from './module.entity';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
+const fs = require('fs')
 import { updateModuleDto } from './dtos/updateModule.dto';
 
 @Injectable()
@@ -115,7 +116,7 @@ constructor( @InjectRepository(Module) private moduleRepository : Repository<Mod
         let level;
         if (updatedData.level_Id) { 
              level = await this.findLevelByIdOrThrowExp(updatedData.level_Id);
-            foundedModule.level = level;
+             foundedModule.level = level;
             } 
         
 
@@ -151,9 +152,17 @@ constructor( @InjectRepository(Module) private moduleRepository : Repository<Mod
         let moduleToRemove ;
         try { 
             moduleToRemove = await this.moduleRepository.findOne({id : id});
-            if(moduleToRemove)
-             return await this.moduleRepository.remove(moduleToRemove);
-          } 
+            if(moduleToRemove) { 
+
+         
+                 if (moduleToRemove.imageUrl) {
+                     let pathToRemove = My_Helper.modulesImagesPath + moduleToRemove.imageUrl;
+                     await fs.unlinkSync(pathToRemove);
+                    }
+                return await this.moduleRepository.remove(moduleToRemove);
+         
+            }
+              } 
         catch( e ) { 
 
             throw ( new HttpException( {
@@ -164,8 +173,6 @@ constructor( @InjectRepository(Module) private moduleRepository : Repository<Mod
         }
         
         throw ( new HttpException( My_Helper.FAILED_RESPONSE('module not found!')  , 201)  );
-        
-
         }
 
         // remember you're using it in Chapter Service 

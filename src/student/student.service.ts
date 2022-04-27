@@ -10,6 +10,9 @@ import { My_Helper } from 'src/MY-HELPER-CLASS';
 import path = require('path')
 import { join } from 'path';
 const fs = require('fs')
+import { createWriteStream } from 'fs';
+import {v4 as uuidv4} from 'uuid';
+
 
 @Injectable()
 export class StudentService {
@@ -67,6 +70,7 @@ export class StudentService {
           success : false , 
           message : 'Student not found '
       } , 201)));
+
          return student;
 
     }
@@ -132,6 +136,7 @@ async updateStudent( id : number, updateStudent : Partial<Student> ) {
       'lastName' , 
       'dateOfBirth' ,
       'email' ,
+      'wilaya',
       'profileImage' ,
       'created_at'  ,
       'updated_at' 
@@ -152,11 +157,9 @@ async deleteStudent(id : number) {
   const path =My_Helper.studentImagesPath+student.profileImage ;
 
   try {
-
-    fs.unlinkSync(path)
+   await fs.unlinkSync(path)
   } catch(err) {
    console.log(err.message);
-    
    throw new HttpException(My_Helper.FAILED_RESPONSE(' something wrong ! , maybe cant remove profile image' ), 201);
   }
   
@@ -177,5 +180,25 @@ async getProfileImage( @Res()  res , profileImage : string){
    
 }
 
+async updateProfileImage ( teacher_Id : number , file : Express.Multer.File ) { 
+   let student = await this.findStudentById(teacher_Id);
+   if  ( !file || ! My_Helper.is_Image(file.mimetype) ) { 
+      throw new HttpException( My_Helper.FAILED_RESPONSE("image must be a {.png, .jpeg, .jpg } ") , 201)
+   };
 
+   let filePath;
+
+   if ( !student.profileImage ) { 
+       let imageName = 'student'+uuidv4() + My_Helper.fileExtinction(file.mimetype);
+        filePath = My_Helper.studentImagesPath + imageName;
+       student.profileImage = imageName;
+   } else { 
+       filePath = My_Helper.studentImagesPath + student.profileImage;
+   }
+
+   let streamWriter = createWriteStream(filePath);
+   streamWriter.write(file.buffer);
+
+   return await this.studentRep.save(student);
+}
 }

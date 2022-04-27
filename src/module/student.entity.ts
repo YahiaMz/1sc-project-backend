@@ -29,6 +29,9 @@ export class Student{
     @Column({type:"varchar" , nullable:true})
     profileImage : string;
 
+    @Column({type : 'varchar' , nullable : true ,length : 30})
+    wilaya : string;
+
     @CreateDateColumn()
     created_at: Date;
    

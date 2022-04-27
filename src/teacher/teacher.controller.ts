@@ -20,9 +20,10 @@ export class TeacherController {
       
         let hashedPassword = await bcrypt.hash(teacherData.password , 12);
         teacherData.password = hashedPassword;
-        await this.teacherService.createTeacher(teacherData);
 
-       return My_Helper.SUCCESS_RESPONSE('user Created with success ');
+   let newTeacher = await this.teacherService.createTeacher(teacherData);
+
+       return My_Helper.SUCCESS_RESPONSE(newTeacher);
     }
 
     @Get('/all')
@@ -80,5 +81,11 @@ export class TeacherController {
        return await this.teacherService.showProfilePicture(profileImage,  res);
     }
 
+
+    @Get('/modulesOfTeacher/:teacher_Id')
+    async getModulesOfTeacher( @Param('teacher_Id') teacher_Id : string ){ 
+       let modules = await this.teacherService.modulesOfTeacher(+teacher_Id);
+    return My_Helper.SUCCESS_RESPONSE(modules);
+    }
 
 }

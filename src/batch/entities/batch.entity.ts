@@ -14,7 +14,6 @@ export class Batch {
     @Column({type:'integer' , unsigned : true , unique : true})
     year : number;
 
-    
     @CreateDateColumn()
     created_at: string;
    

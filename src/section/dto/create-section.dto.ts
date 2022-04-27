@@ -8,6 +8,5 @@ export class CreateSectionDto {
     @IsString()
     name : string;
 
-
-
+    
 }

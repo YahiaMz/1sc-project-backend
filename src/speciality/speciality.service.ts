@@ -30,7 +30,7 @@ export class SpecialityService {
 
 
 
-  private async findBatchById ( batch_Id : number ) { 
+  private async findBatchByIdOrThrowException ( batch_Id : number ) { 
     let batch;
     try {
        batch = await this.batchRepo.findOne({id : batch_Id});
@@ -198,7 +198,7 @@ export class SpecialityService {
   async remove(id: number) {
     let speciality = await this.findSpecialityByIdoOrThrowExp(id);
     await this.specialityRepo.remove(speciality);
-
+     
      return speciality;
   }
 

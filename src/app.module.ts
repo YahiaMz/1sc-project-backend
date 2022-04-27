@@ -29,27 +29,60 @@ import { Sale } from './sale/entities/sale.entity';
 import { Lesson } from './lesson/entities/lesson.entity';
 
 
+let onlineConf = 
+  {
+    type: 'mysql',
+    host: 'mysql-77190-0.cloudclusters.net',
+    port: 19483,
+    username :'admin',
+    password : 'Pvjrnwzy',
+    database:'1cs_project_db',
+    autoLoadEntities: true,
+    entities: [
+      Teacher , Admin , ModuleEntity , 
+      Student  , Batch , Level , Speciality , 
+      Group , SpecialityHasManyMoudules ,
+      New , Chapter , Timetable , 
+      Sale , Lesson
+    ],
+    synchronize: true,
+  };
+
+
+  let localhostConfig = {
+    type: 'mysql',
+    host: 'localhost',
+    port: 3036,
+    database:'test',
+    autoLoadEntities: true,
+    entities: [
+      Teacher , Admin , ModuleEntity , 
+      Student  , Batch , Level , Speciality , 
+      Group , SpecialityHasManyMoudules ,
+      New , Chapter , Timetable , 
+      Sale , Lesson
+    ],
+    synchronize: true,
+  };
 
 @Module({
   imports: [ TeacherModule, AdminModule, StudentModule, ModuleModule ,
     
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'mysql-77190-0.cloudclusters.net',
-      port: 19483,
-      username :'admin',
-      password : 'Pvjrnwzy',
-      database:'1cs_project_db',
-      autoLoadEntities: true,
-      entities: [
-        Teacher , Admin , ModuleEntity , 
-        Student  , Batch , Level , Speciality , 
-        Group , SpecialityHasManyMoudules ,
-        New , Chapter , Timetable , 
-        Sale , Lesson
-      ],
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot({ type: 'mysql',
+    host: 'mysql-77190-0.cloudclusters.net',
+    port: 19483,
+    username :'admin',
+    password : 'Pvjrnwzy',
+    database:'1cs_project_db',
+    autoLoadEntities: true,
+    entities: [
+      Teacher , Admin , ModuleEntity , 
+      Student  , Batch , Level , Speciality , 
+      Group , SpecialityHasManyMoudules ,
+      New , Chapter , Timetable , 
+      Sale , Lesson
+    ],
+    synchronize: true,}),
     
     BatchModule,
     LevelModule,

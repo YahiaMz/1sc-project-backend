@@ -67,6 +67,7 @@ async  create(createChapterDto: CreateChapterDto , lecture_file : Express.Multer
     } catch (error) {
       console.log(error.message);
       
+      
       throw new HttpException( 
        { success : false , 
       message : 'something wrong' , 

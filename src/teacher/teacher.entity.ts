@@ -29,11 +29,17 @@ export class Teacher{
     @Column({type:"varchar" , nullable:true})
     profileImage : string;
 
+    @Column({type : 'varchar' , nullable : true})
+    wilaya : string;
+    
     @CreateDateColumn()
     created_at: Date;
    
-   @UpdateDateColumn()
+    @UpdateDateColumn()
     updated_at: Date;
+
+
+    
 
 
 }
