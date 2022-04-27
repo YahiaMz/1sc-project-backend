@@ -24,9 +24,9 @@ import { NewModule } from './new/new.module';
 import { New } from './new/entities/new.entity';
 import { ChapterModule } from './chapter/chapter.module';
 import { Chapter } from './chapter/entities/chapter.entity';
-import { TimetableModule } from './timetable/timetable.module';
-import { LessonModule } from './lesson/lesson.module';
-import { SaleModule } from './sale/sale.module';
+import { Timetable } from './timetable/entities/timetable.entity';
+import { Sale } from './sale/entities/sale.entity';
+import { Lesson } from './lesson/entities/lesson.entity';
 
 
 
@@ -35,15 +35,18 @@ import { SaleModule } from './sale/sale.module';
     
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      database:'test',
+      host: 'mysql-77190-0.cloudclusters.net',
+      port: 19483,
+      username :'admin',
+      password : 'Pvjrnwzy',
+      database:'1cs_project_db',
       autoLoadEntities: true,
       entities: [
         Teacher , Admin , ModuleEntity , 
         Student  , Batch , Level , Speciality , 
         Group , SpecialityHasManyMoudules ,
-        New , Chapter
+        New , Chapter , Timetable , 
+        Sale , Lesson
       ],
       synchronize: true,
     }),
@@ -54,14 +57,10 @@ import { SaleModule } from './sale/sale.module';
     GroupModule,
     SectionModule,
     NewModule,
-    ChapterModule,
-    TimetableModule,
-    LessonModule,
-    SaleModule,  
+    ChapterModule,  
   ], 
   controllers: [AppController ],
   providers: [AppService],
 })
 export class AppModule { 
-
 }
